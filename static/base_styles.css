@@ -1,0 +1,28 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+.app_logo{
+    font-family: 'Montserrat';
+    font-size: 32px;
+    font-weight: 800;
+    color: blue;
+}
+
+.nav-pills{
+    margin-right: 20px;
+    font-size: 18px;
+}
+
+.nav-item{
+    margin-left: 25px;
+}
+
+.footer{
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: #f2f0f5;
+}

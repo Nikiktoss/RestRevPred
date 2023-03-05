@@ -1,0 +1,56 @@
+{% extends 'base_form.html' %}
+{% load static %}
+
+{% block title %}Sign up to RRP | Restaurant Revenue Prediction{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'sign_up_styles.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="sign_up_form">
+        <div class="form_header">
+            <h2 style="font-family: 'Montserrat'">Sign up to RRP</h2>
+        </div>
+        <form class="sign_form" method="post" action="{% url 'sign_up_page' %}">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form_element">
+                    <label id="{{ field.id_for_label }}" class="label_tag">{{ field.label }}</label><br>
+                    {{ field }}
+                </div>
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            {% if form.errors %}
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <button type="submit" class="btn-custom-submit" id="custom_submit_button" onclick="change()">Sign up</button>
+        </form>
+        <div class="form_footer">
+            <p style="font-family: 'Montserrat'; font-size: 20px; margin-right: 10px; display: flex; align-self: center">Already have an account? </p>
+            <a href="{% url 'login_page' %}" style="font-family: 'Montserrat'; font-size: 20px; text-decoration: none">
+                Sign in->
+            </a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        function change()
+        {
+            var elem = document.getElementById("custom_submit_button");
+            if (elem.innerHTML == "Sign up") elem.innerHTML = "Signing up...";
+        }
+    </script>
+{% endblock %}

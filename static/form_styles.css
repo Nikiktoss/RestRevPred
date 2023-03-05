@@ -1,0 +1,72 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    padding 0px;
+    color: var(--color-fg-default);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form_header{
+    margin-bottom: 15px;
+}
+
+.label_tag{
+    font-family: 'Montserrat';
+    font-size: 18px;
+}
+
+.form_element{
+    width: 100%;
+    height: 35%;
+    margin-bottom: 10px;
+}
+
+.input_field{
+    width: 100%;
+    height: 50%;
+    border-radius: 5px;
+}
+
+.input_field:focus{
+    outline: 0;
+    border: 3px solid #959ef0;
+}
+
+.btn-custom-submit{
+    width: 100%;
+    height: 20%;
+    background: #24bf3e;
+    font-family: 'Montserrat';
+    font-size: 20px;
+    color: white;
+    border-radius: 7px;
+    border: 1px solid;
+}
+
+.btn-custom-submit:hover{
+    background: #167319;
+}
+
+.btn-custom-submit:focus{
+    background-color: #167319;
+}
+
+.form_footer{
+    width: 50%;
+    height: 20%;
+    padding: 15px 15px;
+    display: flex;
+    background-color: #f6f5f7;
+    justify-content: center;
+    border-radius: 10px;
+    border: 1px solid black;
+}

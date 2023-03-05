@@ -1,0 +1,52 @@
+{% extends 'base_form.html' %}
+{% load static %}
+
+{% block title %}Sign in to RRP | Restaurant Revenue Prediction{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'sign_in_styles.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="sign_in_form">
+        <div class="form_header">
+            <h2 style="font-family: 'Montserrat'">Sign in to RRP</h2>
+        </div>
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert_message">
+                        {{ message }}
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <form class="login_form" method="post" action="{% url 'login_page' %}">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form_element">
+                    <label id="{{ field.id_for_label }}" class="label_tag">Input {{ field.label }}</label>
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn-custom-submit" id="custom_submit_button" onclick="change()">Sign in</button>
+        </form>
+        <div class="form_footer">
+            <p style="font-family: 'Montserrat'; font-size: 20px; margin-right: 10px; display: flex; align-self: center">New to RRP?</p>
+            <a href="{% url 'sign_up_page' %}" style="font-family: 'Montserrat'; font-size: 20px; text-decoration: none">
+                Create an account?
+            </a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    function change()
+    {
+        var elem = document.getElementById("custom_submit_button");
+        if (elem.innerHTML == "Sign in") elem.innerHTML = "Signing in...";
+    }
+</script>
+{% endblock %}

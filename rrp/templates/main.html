@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Main Page | Restaurant Revenue Prediction{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'main_styles.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="main_content">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert_message">
+                        {{ message }}
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+       <div class="intro">
+            <p class="intro_text">RRP (restaurant revenue prediction) is an application that, according to certain data, can determine the income
+            of your restaurant in the near future. To do this, a special regression model is trained, which processes the
+            input data and produces the final value of income. Also, the result and the course of calculations can be
+            obtained in PDF format or we will send it to you by mail.</p>
+
+           <img src="{% static '/images/revenue_prediction.webp' %}" class="intro_picture">
+       </div>
+
+        <p class="menu_title">Main menu</p>
+
+        <div class="menu_actions">
+            <div class="card" style="width: 35rem;">
+              <div class="card-body">
+                <h5 class="card-title">Your profile</h5>
+                <p class="card-text">
+                    Here you can view or edit your personal data, see the history of actions for the last time
+                </p>
+                <a href="#" class="btn btn-primary">Open</a>
+              </div>
+            </div>
+
+            <div class="card" style="width: 35rem;">
+              <div class="card-body">
+                <h5 class="card-title">Predict revenue</h5>
+                <p class="card-text">
+                    Fill out the form with your data and as a result you will receive a complete analysis of the data
+                    and the predicted value of income
+                </p>
+                <a href="#" class="btn btn-primary">Count</a>
+              </div>
+            </div>
+        </div>
+   </div>
+{% endblock %}

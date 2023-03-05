@@ -1,0 +1,43 @@
+.sign_in_form{
+    width: 60%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.login_form{
+    width: 50%;
+    height: 70%;
+    padding: 15px 15px;
+    display: flex;
+    flex-direction: column;
+    background-color: #f6f5f7;
+    border-radius: 10px;
+    border: 1px solid black;
+    margin-bottom: 25px;
+}
+
+.messages{
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.alert_message{
+    width: 80%;
+    height: 50px;
+    padding: 10px; 15px;
+    font-family: 'Montserrat';
+    font-size: 18px;
+    background-color: #ed5f68;
+    margin-bottom: 20px;
+    outline: 0;
+    border: 3px solid #959ef0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

@@ -1,0 +1,97 @@
+.label_tag{
+    font-family: 'Montserrat';
+    font-size: 18px;
+}
+
+.form_element{
+    width: 100%;
+    height: 35%;
+    margin-bottom: 15px;
+}
+
+.input_field{
+    width: 100%;
+    height: 50%;
+    border-radius: 5px;
+}
+
+.input_field:focus{
+    outline: 0;
+    border: 3px solid #959ef0;
+}
+
+.btn-custom-submit{
+    width: 20%;
+    height: 20%;
+    background: #24bf3e;
+    font-family: 'Montserrat';
+    font-size: 20px;
+    color: white;
+    border-radius: 7px;
+    border: 1px solid;
+    margin-left: 150px;
+}
+
+.btn-custom-submit:hover{
+    background: #167319;
+}
+
+.btn-custom-submit:focus{
+    background-color: #167319;
+}
+
+.footer{
+    width: 100%;
+    position: fixed;
+    left: 0px;
+    bottom: 0px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: #E0E0E0;
+}
+
+.edit_form{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.form_content{
+    width: 100%;
+    height: 70%;
+    display: flex;
+    justify-content: space-around;
+    padding: 40px 50px
+}
+
+.profile_edit_content{
+    width: 30%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.profile_edit_data{
+    width: 40%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.alert-danger{
+    font-family: 'Montserrat';
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.category_text{
+    width: 100%;
+    min-height: 100px;
+    border-radius: 10px;
+    border: 2px solid black;
+    font-family: 'Montserrat';
+    font-size: 20px;
+}

@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile page | Restaurant Revenue Prediction{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'accounts_styles.css' %}">
+{% endblock %}
+
+{% block header %}
+    {% include 'include/header_additional.html' %}
+{% endblock %}
+
+{% block content %}
+    <div class="main_content">
+        <div class="profile_content">
+            {% if user.photo %}
+                <img src="{{ user.photo.url }}" style="width: 100%; height: 400px;">
+            {% else %}
+                <img src="{% static 'images/default_user.jpg' %}" style="width: 100%; height: 400px;">
+            {% endif %}
+            <p class="data_element">{{ user.username }}</p>
+            <a role="button" href="{% url 'edit_profile_page' user.slug %}" class="edit_button">Edit profile</a>
+        </div>
+
+        <div class="profile_data">
+            <div class="profile_element">
+                <p class="category">First name:</p>
+                {% if user.first_name %}
+                    <p class="category_value">{{ user.first_name }}</p>
+                {% else %}
+                    <p class="category_value">-/---------------------/-</p>
+                {% endif %}
+            </div>
+            <div class="profile_element">
+                <p class="category">Last name:</p>
+                {% if user.last_name %}
+                    <p class="category_value">{{ user.last_name }}</p>
+                {% else %}
+                    <p class="category_value">-/---------------------/-</p>
+                {% endif %}
+            </div>
+            <div class="profile_element">
+                <p class="category">Email:</p>
+                <p class="category_value">{{ user.email }}</p>
+            </div>
+            <div class="profile_element">
+                <p class="category">Date of birth:</p>
+                {% if user.birth_date %}
+                    <p class="category_value">{{ user.birth_date }}</p>
+                {% else %}
+                    <p class="category_value">-/---------------------/-</p>
+                {% endif %}
+            </div>
+            <div class="profile_element">
+                <p class="category">Company:</p>
+                {% if user.company %}
+                    <p class="category_value">{{ user.company }}</p>
+                {% else %}
+                    <p class="category_value">-/---------------------/-</p>
+                {% endif %}
+            </div>
+            <div class="profile_element">
+                <p class="category">Joined:</p>
+                <p class="category_value">{{ user.creation_date }}</p>
+            </div>
+            <div class="additional_element">
+                <p class="category">Extra information:</p>
+                {% if user.additional_data %}
+                    <p class="category_text">{{ user.additional_data }}</p>
+                {% else %}
+                    <p class="category_text">Add some extra information about yourself</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
