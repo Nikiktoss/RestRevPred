@@ -1,15 +1,17 @@
 .messages{
     width: 100%;
-    padding-left: 20px;
-    padding-right: 20px;
-    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: column;
 }
 
 .alert_message{
-    width: 100%;
+    width: 90%;
     padding: 20px;
     background-color: #8bf78e;
     color: white;
+    margin-top: 15px;
     margin-bottom: 15px;
     border-radius: 30px;
     font-family: serif;
