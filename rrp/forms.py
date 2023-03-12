@@ -61,19 +61,31 @@ class UserRegistrationForm(forms.ModelForm):
 
 
 class UserEditForm(forms.ModelForm):
-    photo = forms.ImageField(label="Account photo", required=False)
-    username = forms.CharField(label='Username', required=False, widget=forms.TextInput(attrs={'class': 'input_field'}))
-    first_name = forms.CharField(label="First name", required=False,
+    photo = forms.ImageField(label="Account photo", required=False,
+                             widget=ClearableFileInput(attrs={'class': 'file_field'}))
+    username = forms.CharField(label='Username', max_length=35, required=False,
+                               widget=forms.TextInput(attrs={'class': 'input_field'}))
+    first_name = forms.CharField(label="First name", required=False, max_length=50,
                                  widget=forms.TextInput(attrs={'class': 'input_field'}))
-    last_name = forms.CharField(label="Last name", required=False,
+    last_name = forms.CharField(label="Last name", required=False, max_length=50,
                                 widget=forms.TextInput(attrs={'class': 'input_field'}))
-    email = forms.EmailField(label="Email", required=False, widget=forms.EmailInput(attrs={'class': 'input_field'}))
+    email = forms.EmailField(label="Email", required=False, max_length=50,
+                             widget=forms.EmailInput(attrs={'class': 'input_field'}))
     birth_date = forms.DateField(label="Date of birth", required=False,
                                  widget=AdminDateWidget(attrs={'class': 'input_field'}))
-    company = forms.CharField(label="Company", required=False, widget=forms.TextInput(attrs={'class': 'input_field'}))
+    company = forms.CharField(label="Company", required=False, max_length=45,
+                              widget=forms.TextInput(attrs={'class': 'input_field'}))
     additional_data = forms.CharField(label="Extra information", required=False,
-                                      widget=forms.TextInput(attrs={'class': 'category_text'}))
+                                      widget=forms.Textarea(attrs={'class': 'category_text'}))
 
     class Meta:
         model = User
         fields = ("photo", "username", "first_name", "last_name", "email", "birth_date", "company", "additional_data")
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+
+        if username == "":
+            raise forms.ValidationError("username can\'t be an empty string")
+
+        return username
