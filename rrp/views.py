@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
@@ -7,8 +8,15 @@ from django.views.generic import CreateView, DetailView, UpdateView
 from .forms import LoginUserForm, UserRegistrationForm, UserEditForm
 from django.contrib.auth import get_user_model, login
 
+import logging
 
+
+logger = logging.getLogger(__name__)
+
+
+@login_required
 def main(request):
+    logger.debug('Ok')
     return render(request, 'main.html', context={'user': request.user})
 
 
@@ -19,6 +27,9 @@ class UserLoginView(LoginView):
 
     def get_success_url(self):
         return reverse_lazy('main_page')
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, context={'form': self.form_class(), 'user': request.user})
 
     def post(self, request, *args, **kwargs):
         username = request.POST["username"]
@@ -35,6 +46,7 @@ class UserLoginView(LoginView):
 
     def form_valid(self, form):
         messages.success(self.request, "You have been successfully logged in RRP")
+        logging.info('logged in!')
         return super().form_valid(form)
 
     def form_invalid(self, form):
@@ -76,3 +88,6 @@ class UserUpdateView(UpdateView):
     form_class = UserEditForm
     template_name = "edit_profile.html"
     model = get_user_model()
+
+    def get_success_url(self):
+        return reverse_lazy('profile_page', kwargs={'slug': self.request.user.slug})
