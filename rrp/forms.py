@@ -6,7 +6,23 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import get_user_model
 from django.forms import ClearableFileInput
 
+import os
+
 User = get_user_model()
+
+types = [('IL', 'IL'),
+         ('FC', 'FC')]
+groups = [('Big Cities', 'Big Cities'),
+          ('Other', 'Other')]
+
+cities = [('Adana', 'Adana'), ('Afyonkarahisar', 'Afyonkarahisar'), ('Amasya', 'Amasya'), ('Ankara', 'Ankara'),
+          ('Antalya', 'Antalya'), ('Aydın', 'Aydın'), ('Balıkesir', 'Balıkesir'), ('Bursa', 'Bursa'),
+          ('Denizli', 'Denizli'), ('Diyarbakır', 'Diyarbakır'), ('Edirne', 'Edirne'), ('Elazığ', 'Elazığ'),
+          ('Eskişehir', 'Eskişehir'), ('Gaziantep', 'Gaziantep'), ('Karabük', 'Karabük'), ('Kastamonu', 'Kastamonu'),
+          ('Kayseri', 'Kayseri'), ('Kocaeli', 'Kocaeli'), ('Konya', 'Konya'), ('Kütahya', 'Kütahya'),
+          ('Kırklareli', 'Kırklareli'), ('Muğla', 'Muğla'), ('Sakarya', 'Sakarya'), ('Samsun', 'Samsun'),
+          ('Tekirdağ', 'Tekirdağ'), ('Tokat', 'Tokat'), ('Uşak', 'Uşak'), ('İstanbul', 'İstanbul'), ('İzmir', 'İzmir'),
+          ('Şanlıurfa', 'Şanlıurfa')]
 
 
 class LoginUserForm(AuthenticationForm):
@@ -89,3 +105,22 @@ class UserEditForm(forms.ModelForm):
             raise forms.ValidationError("username can\'t be an empty string")
 
         return username
+
+
+class UploadFileForm(forms.Form):
+    input_file = forms.FileField(label="Input file")
+    city_name = forms.CharField(label="City name", required=False,
+                                widget=forms.SelectMultiple(attrs={'class': 'input_field'}, choices=cities))
+    city_group = forms.ChoiceField(label="City Group", required=False,
+                                   widget=forms.RadioSelect(attrs={'class': 'select_field'}), choices=groups)
+    restaurant_type = forms.ChoiceField(label="Restaurant Type", required=False,
+                                        widget=forms.RadioSelect(attrs={'class': 'select_field'}), choices=types)
+
+    def clean_input_file(self):
+        file = self.cleaned_data.get('input_file', None)
+        extension = str(os.path.splitext(file.name)[1][1:].lower())
+
+        if extension != 'csv':
+            raise forms.ValidationError('File type is not allowed')
+
+        return file
