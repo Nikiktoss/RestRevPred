@@ -1,0 +1,130 @@
+.form_intro{
+    width: 100%;
+    height: 75px;
+    display: flex;
+    margin-top: 50px;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Montserrat';
+    font-size: 22px;
+    font-weight: 700;
+    color: blue;
+}
+
+.label_tag{
+    font-family: 'Montserrat';
+    font-size: 20px;
+}
+
+.form{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.upload_file_form{
+    width: 40%;
+    display: flex;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.form_element{
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.input_field{
+    width: 100%;
+    height: 50%;
+    border-radius: 5px;
+}
+
+.input_field:focus{
+    outline: 0;
+    border: 3px solid #959ef0;
+}
+
+.select_field{
+    width: 40%;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Montserrat';
+    font-size: 18px;
+    color: blue;
+}
+
+.select_field[type='radio']{
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    position: relative;
+    display: inline-block;
+    visibility: visible;
+    border: 2px solid white;
+}
+
+.select_field[type='radio']:checked:after {
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    top: -4px;
+    position: relative;
+    background-color: #260b8f;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    border: 2px solid white;
+}
+
+.alert-danger{
+    margin-top: 10px;
+    font-family: 'Montserrat';
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer{
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+}
+
+.form_buttons{
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.reset_button{
+    width: 40%;
+    font-family: 'Montserrat';
+    font-size: 22px;
+    color: white;
+    background: #fa1b1b;
+    border: 2px solid white;
+    border-radius: 10px;
+}
+
+.reset_button:hover {
+    background: #8f0b0b;
+}
+
+.submit_button{
+    width: 40%;
+    font-family: 'Montserrat';
+    font-size: 22px;
+    color: white;
+    background: #24bf3e;
+    border: 2px solid white;
+    border-radius: 10px;
+}
+
+.submit_button:hover {
+    background: #0ead30;
+}
