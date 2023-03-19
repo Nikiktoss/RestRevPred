@@ -5,10 +5,11 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.views.generic import CreateView, DetailView, UpdateView
 
-from .forms import LoginUserForm, UserRegistrationForm, UserEditForm
+from .forms import LoginUserForm, UserRegistrationForm, UserEditForm, UploadFileForm
 from django.contrib.auth import get_user_model, login
 
 import logging
+import pandas as pd
 
 
 logger = logging.getLogger(__name__)
@@ -91,3 +92,18 @@ class UserUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('profile_page', kwargs={'slug': self.request.user.slug})
+
+
+def calculation_form(request):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            file_content = pd.read_csv(form.cleaned_data['input_file'])
+            return render(request, "calculate_form.html", context={'user': request.user, 'file': file_content,
+                                                                   'is_form': False})
+        else:
+            return render(request, "calculate_form.html", context={'user': request.user, 'form': form, 'is_form': True})
+    else:
+        form = UploadFileForm()
+        return render(request, "calculate_form.html", context={'user': request.user, 'form': form, 'is_form': True})

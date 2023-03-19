@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserLoginView, main, UserCreateView, UserDetailView, UserUpdateView
+from .views import UserLoginView, main, UserCreateView, UserDetailView, UserUpdateView, calculation_form
 from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
@@ -9,4 +9,5 @@ urlpatterns = [
     path('sign_up/', UserCreateView.as_view(), name="sign_up_page"),
     path('profile/<slug:slug>/', UserDetailView.as_view(), name="profile_page"),
     path('profile/<slug:slug>/edit/', UserUpdateView.as_view(), name="edit_profile_page"),
+    path('predict/', calculation_form, name="predict_revenue_form"),
 ]

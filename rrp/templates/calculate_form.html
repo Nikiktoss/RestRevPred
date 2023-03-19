@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Predicting Revenue Form | Restaurant Revenue Prediction{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'calculate_form_styles.css' %}">
+{% endblock %}
+
+{% block header %}
+    {% include 'include/header_additional.html' %}
+{% endblock %}
+
+{% block content %}
+    {% if is_form %}
+        <div class="form_intro">Upload .csv file with data, fill out the form below and get the result</div>
+
+        <div class="form">
+            <form method="post" class="upload_file_form" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form_element">
+                        <label id="{{ field.id_for_label }}" class="label_tag">{{ field.label }}:</label><br>
+                        {{ field }}
+                    </div>
+                    {% for error in field.errors %}
+                        <div class="alert alert-danger">
+                            <strong>{{ error|escape }}</strong>
+                            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+                {% if form.errors %}
+                    {% for error in form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <strong>{{ error|escape }}</strong>
+                            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="form_buttons">
+                    <button type="reset" class="reset_button">Cansel</button>
+                    <button type="submit" class="submit_button">Predict</button>
+                </div>
+            </form>
+        </div>
+    {% else %}
+        <p>{{ file }}</p>
+    {% endif %}
+{% endblock %}
