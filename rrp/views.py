@@ -4,6 +4,7 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.views.generic import CreateView, DetailView, UpdateView
+from .revenue_model import RevenuePredictionModel
 
 from .forms import LoginUserForm, UserRegistrationForm, UserEditForm, UploadFileForm
 from django.contrib.auth import get_user_model, login
@@ -13,6 +14,8 @@ import pandas as pd
 
 
 logger = logging.getLogger(__name__)
+prediction_model = RevenuePredictionModel()
+prediction_model.fit_model()
 
 
 @login_required
@@ -100,8 +103,19 @@ def calculation_form(request):
 
         if form.is_valid():
             file_content = pd.read_csv(form.cleaned_data['input_file'])
-            return render(request, "calculate_form.html", context={'user': request.user, 'file': file_content,
-                                                                   'is_form': False})
+            numeric_data, category_data = prediction_model.divide_data(file_content)
+            normalize_data = prediction_model.prepare_data(file_content)
+            normalize_cat_data = normalize_data[['City', 'City Group', 'Type']]
+            normalize_num_data = normalize_data.drop(['City', 'City Group', 'Type'], axis=1)
+            result_revenue = prediction_model.predict_revenue(file_content)
+            return render(request, "calculate_form.html", context={'user': request.user, 'is_form': False,
+                                                                   'cat_cols': category_data.columns,
+                                                                   'num_cols': numeric_data.columns,
+                                                                   'num_values': numeric_data.values[0],
+                                                                   'cat_values': category_data.values[0],
+                                                                   'norm_num_data': normalize_num_data.values[0],
+                                                                   'norm_cat_data': normalize_cat_data.values[0],
+                                                                   'result_revenue': result_revenue[0]})
         else:
             return render(request, "calculate_form.html", context={'user': request.user, 'form': form, 'is_form': True})
     else:
