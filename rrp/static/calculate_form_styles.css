@@ -1,3 +1,12 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 .form_intro{
     width: 100%;
     height: 75px;
@@ -22,6 +31,7 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    margin-bottom: 60px;
 }
 
 .upload_file_form{
@@ -89,12 +99,6 @@
     align-items: center;
 }
 
-.footer{
-    position: absolute;
-    left: 0px;
-    bottom: 0px;
-}
-
 .form_buttons{
     width: 100%;
     display: flex;
@@ -127,4 +131,49 @@
 
 .submit_button:hover {
     background: #0ead30;
+}
+
+.input_data{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 50px;
+}
+
+.input_data_title{
+    font-family: 'Montserrat';
+    font-size: 26px;
+    color: blue;
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+table{
+    border-collapse: collapse;
+    border: 2px solid blue;
+}
+
+.table_element{
+    width: 100%;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.table_title{
+    font-family: 'Montserrat';
+    font-size: 22px;
+    color: blue;
+}
+
+.prediction_title{
+    font-family: 'Montserrat';
+    font-size: 26px;
+    color: blue;
+    margin-bottom: 20px;
+    margin-top: 20px;
 }
