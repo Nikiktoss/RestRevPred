@@ -45,6 +45,88 @@
             </form>
         </div>
     {% else %}
-        <p>{{ file }}</p>
+        <div class="input_data">
+            <p class="input_data_title">Input data</p>
+            <div class="table_element">
+                <p class="table_title">Category data:</p>
+                <table style="width: 250px;">
+                    <tr style="border-bottom: 2px solid blue;">
+                        {% for cat_col in cat_cols %}
+                        <th style="border-right: 2px solid blue; text-align: center;">
+                            {{ cat_col }}
+                        </th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for cat_value in cat_values %}
+                            <td style="border-right: 2px solid blue; text-align: center;">
+                                {{ cat_value }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                </table>
+            </div>
+
+            <div class="table_element">
+                <p class="table_title">Numeric data:</p>
+                <table>
+                    <tr style="border-bottom: 2px solid blue;">
+                        {% for num_col in num_cols %}
+                        <th style="border-right: 2px solid blue; text-align: center;">
+                            {{ num_col }}
+                        </th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for num_value in num_values %}
+                            <td style="border-right: 2px solid blue; text-align: center;">
+                                {{ num_value }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                </table>
+            </div>
+            <p class="input_data_title">Normalize data</p>
+            <div class="table_element">
+                <p class="table_title">Normalize category data:</p>
+                <table style="width: 300px;">
+                    <tr style="border-bottom: 2px solid blue;">
+                        {% for cat_col in cat_cols %}
+                        <th style="border-right: 2px solid blue; text-align: center;">
+                            {{ cat_col }}
+                        </th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for norm_cat_value in norm_cat_data %}
+                            <td style="border-right: 2px solid blue; text-align: center;">
+                                {{ norm_cat_value|floatformat:5 }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                </table>
+            </div>
+            <div class="table_element">
+                <p class="table_title">Normalize numeric data:</p>
+                <table>
+                    <tr style="border-bottom: 2px solid blue;">
+                        {% for num_col in num_cols %}
+                        <th style="border-right: 2px solid blue; text-align: center;">
+                            {{ num_col }}
+                        </th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for norm_num_value in norm_num_data %}
+                            <td style="border-right: 2px solid blue; text-align: center;">
+                                {{ norm_num_value|floatformat }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                </table>
+            </div>
+            <p class="prediction_title">Final result:</p>
+            <p style="font-size: 26px;"><b>{{ result_revenue }}</b></p>
+        </div>
     {% endif %}
 {% endblock %}
