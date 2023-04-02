@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User
+from .models import User, PredictionResult
 from django.utils.html import format_html
 
 
@@ -20,4 +20,11 @@ class UserAdmin(admin.ModelAdmin):
             return format_html('<img src="/static/images/default_user.jpg" style="width: 80px; height:80px;" />')
 
 
+class PredictionResultAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'revenue')
+    list_display_links = ('id', 'user')
+    readonly_fields = ('date_of_calculations',)
+
+
 admin.site.register(User, UserAdmin)
+admin.site.register(PredictionResult, PredictionResultAdmin)
