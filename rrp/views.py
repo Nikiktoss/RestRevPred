@@ -8,7 +8,7 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.utils.safestring import mark_safe
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, UpdateView, FormView
 from django.http import HttpResponse
 
 
@@ -18,6 +18,7 @@ from.revenue_model import cb, normalizer, get_result_data
 from.html_code_generator import HTMlCodeGenerator
 from.pdf_output import PDF, generate_pdf_file
 from.json_output import JSON
+from.models import PredictionResult
 
 
 logger = logging.getLogger(__name__)
@@ -103,31 +104,62 @@ class UserUpdateView(UpdateView):
         return reverse_lazy('profile_page', kwargs={'slug': self.request.user.slug})
 
 
-def calculation_form(request):
-    if request.method == 'POST':
+class CalculationForm(FormView):
+    def get(self, request, *args, **kwargs):
+        form = UploadFileForm()
+        return render(request, "calculate_form.html", context={'user': request.user, 'form': form, 'is_form': True})
+
+    @staticmethod
+    def get_form_data(form):
+        data = pd.read_csv(form.cleaned_data['input_file'])
+
+        if 'City' not in data.columns:
+            data['City'] = form.cleaned_data['city_name']
+
+        if 'City Group' not in data.columns:
+            data['City Group'] = form.cleaned_data['city_group']
+
+        if 'Type' not in data.columns:
+            data['Type'] = form.cleaned_data['restaurant_type']
+
+        return data
+
+    @staticmethod
+    def generate_files(request, *args):
+        pdf = PDF()
+        js = JSON()
+
+        generate_pdf_file(pdf, args[0], args[1], args[2], args[3], args[4])
+        pdf.output(f'media/pdf_files/revenue_prediction_{request.user.username}.pdf')
+        js.write_to_json_file(f'media/json_files/revenue_prediction_{request.user.username}', args[0], args[1], args[2],
+                              args[3], args[4])
+
+    @staticmethod
+    def update_data(request, revenue):
+        User = get_user_model()
+        user = User.objects.get(pk=request.user.pk)
+        user.number_of_predictions += 1
+        user.save()
+
+        revenue_result = PredictionResult(user=user, revenue=revenue[0])
+        revenue_result.save()
+
+    def post(self, request, *args, **kwargs):
         form = UploadFileForm(request.POST, request.FILES)
 
         if form.is_valid():
-            pdf = PDF()
-            js = JSON()
-
-            data = pd.read_csv(form.cleaned_data['input_file'])
+            data = self.get_form_data(form)
             num_data, cat_data, normalize_num_data, normalize_cat_data, revenue = get_result_data(cb, normalizer, data)
             html_output = html_generator.generate_html(num_data, cat_data, normalize_num_data, normalize_cat_data,
                                                        revenue[0])
-            generate_pdf_file(pdf, num_data, cat_data, normalize_num_data, normalize_cat_data, revenue)
 
-            pdf.output(f'media/pdf_files/revenue_prediction_{request.user.username}.pdf')
-            js.write_to_json_file(f'media/json_files/revenue_prediction_{request.user.username}', num_data, cat_data,
-                                  normalize_num_data, normalize_cat_data, revenue)
+            self.generate_files(request, num_data, cat_data, normalize_num_data, normalize_cat_data, revenue)
+            self.update_data(request, revenue)
 
             return render(request, "calculate_form.html", context={'user': request.user, 'is_form': False,
                                                                    'content': mark_safe(html_output)})
         else:
             return render(request, "calculate_form.html", context={'user': request.user, 'form': form, 'is_form': True})
-    else:
-        form = UploadFileForm()
-        return render(request, "calculate_form.html", context={'user': request.user, 'form': form, 'is_form': True})
 
 
 def send_pdf_file(request):
