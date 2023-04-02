@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from django.forms import ClearableFileInput
 
 import os
+import pandas as pd
 
 User = get_user_model()
 
@@ -118,9 +119,42 @@ class UploadFileForm(forms.Form):
 
     def clean_input_file(self):
         file = self.cleaned_data.get('input_file', None)
+
         extension = str(os.path.splitext(file.name)[1][1:].lower())
 
         if extension != 'csv':
             raise forms.ValidationError('File type is not allowed')
 
         return file
+
+    def clean_city_name(self):
+        file = self.cleaned_data.get('input_file', None)
+        data = pd.read_csv(file)
+        file.seek(0)
+
+        name = self.cleaned_data.get('city_name')
+        if 'City' not in data.columns and name == "":
+            raise forms.ValidationError('City name field is not filled')
+        return name[2: len(name) - 2]
+
+    def clean_city_group(self):
+        file = self.cleaned_data.get('input_file', None)
+        data = pd.read_csv(file)
+        file.seek(0)
+
+        group = self.cleaned_data.get('city_group')
+        if 'City Group' not in data.columns and group == "":
+            raise forms.ValidationError('City group field is not filled')
+
+        return group
+
+    def clean_restaurant_type(self):
+        file = self.cleaned_data.get('input_file', None)
+        data = pd.read_csv(file)
+        file.seek(0)
+
+        rest_type = self.cleaned_data.get('restaurant_type')
+        if 'Type' not in data.columns and rest_type == "":
+            raise forms.ValidationError('Type field is not filled')
+
+        return rest_type
