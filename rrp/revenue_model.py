@@ -1,24 +1,20 @@
-from catboost import CatBoostRegressor
 import category_encoders as ce
 
 import pandas as pd
 import numpy as np
 import datetime
+import random
+
+import pickle
 
 
-train_data = pd.read_csv('train.csv')
-test_valid_data = train_data.loc[123:, :]
-
-train_data = train_data.iloc[:123, :]
-
-train_cols = train_data.columns
-test_valid_data = pd.DataFrame(np.array(test_valid_data), columns=train_cols)
+seed = 0
+random.seed(seed)
+np.random.seed(seed)
 
 
-class RevenuePredictionModel:
+class NormalizeDataClass:
     def __init__(self):
-        self.model = CatBoostRegressor(n_estimators=250, loss_function="RMSE", learning_rate=0.524, depth=3,
-                                       task_type='CPU', verbose=False)
         self.cat_encoder = ce.cat_boost.CatBoostEncoder()
         self.min_values = None
         self.max_values = None
@@ -45,7 +41,7 @@ class RevenuePredictionModel:
 
         return num_data
 
-    def prepare_train_data(self, data):
+    def prepare_train_data(self, data=pd.read_csv('train.csv')):
         train_num_data, train_cat_data = self.divide_data(data.drop('revenue', axis=1))
         train_num_data = self.normalize_train_data(train_num_data)
 
@@ -60,9 +56,9 @@ class RevenuePredictionModel:
 
         return x_train, y_train
 
-    def fit_model(self, data=pd.read_csv('train.csv').iloc[:123, :]):
+    def fit_model(self, data):
         x_train, y_train = self.prepare_train_data(data)
-        self.model.fit(x_train, y_train)
+        return x_train, y_train
 
     def normalize_data(self, data):
         data = (data - self.min_values) / (self.max_values - self.min_values)
@@ -79,6 +75,26 @@ class RevenuePredictionModel:
 
     def predict_revenue(self, data):
         x = self.prepare_data(data)
-        revenue = np.power(self.model.predict(x) * np.sqrt(self.w), 2)
+        return x
 
-        return revenue
+
+def get_result_data(model, normalizator, data):
+    num_data, cat_data = normalizator.divide_data(data)
+    normalize_data = normalizator.prepare_data(data)
+
+    normalize_num_data = normalize_data.drop(['City', 'City Group', 'Type'], axis=1)
+    normalize_cat_data = normalize_data[['City', 'City Group', 'Type']]
+
+    result = np.power(model.predict(normalize_data) * np.sqrt(normalizator.w), 2)
+
+    return num_data, cat_data, normalize_num_data, normalize_cat_data, result
+
+
+train_data = pd.read_csv('train.csv')
+train_data = train_data.iloc[:123, :]
+
+normalizer = NormalizeDataClass()
+x_tr, y_tr = normalizer.fit_model(train_data)
+
+with open('model.pkl', 'rb') as f:
+    cb = pickle.load(f)
