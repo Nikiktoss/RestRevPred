@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import UserLoginView, main, UserCreateView, UserDetailView, UserUpdateView, calculation_form
+from .views import UserLoginView, main, UserCreateView, UserDetailView, UserUpdateView, calculation_form, \
+    send_pdf_file, send_json_file
 from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
@@ -10,4 +11,6 @@ urlpatterns = [
     path('profile/<slug:slug>/', UserDetailView.as_view(), name="profile_page"),
     path('profile/<slug:slug>/edit/', UserUpdateView.as_view(), name="edit_profile_page"),
     path('predict/', calculation_form, name="predict_revenue_form"),
+    path('send_pdf/', send_pdf_file, name="send_pdf_file"),
+    path('send_json/', send_json_file, name="send_json_file"),
 ]
