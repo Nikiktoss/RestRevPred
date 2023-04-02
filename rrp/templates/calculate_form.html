@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Predicting Revenue Form | Restaurant Revenue Prediction{% endblock %}
+{% block title %}Predicting Revenue | Restaurant Revenue Prediction{% endblock %}
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'calculate_form_styles.css' %}">
@@ -45,88 +45,23 @@
             </form>
         </div>
     {% else %}
-        <div class="input_data">
-            <p class="input_data_title">Input data</p>
-            <div class="table_element">
-                <p class="table_title">Category data:</p>
-                <table style="width: 250px;">
-                    <tr style="border-bottom: 2px solid blue;">
-                        {% for cat_col in cat_cols %}
-                        <th style="border-right: 2px solid blue; text-align: center;">
-                            {{ cat_col }}
-                        </th>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        {% for cat_value in cat_values %}
-                            <td style="border-right: 2px solid blue; text-align: center;">
-                                {{ cat_value }}
-                            </td>
-                        {% endfor %}
-                    </tr>
-                </table>
+        <p class="result_title">Revenue Prediction</p>
+        <div class="revenue_prediction">
+            <div class="result_actions">
+                {{ content | safe }}
+                <div class="saving_buttons">
+                    <a href="{% url 'send_pdf_file' %}"><button class="btn btn-danger" style="color: white; font-family: Montserrat">GET PDF</button></a>
+                    <a href="{% url 'send_json_file' %}"><button class="btn btn-warning" style="color: white; font-family: Montserrat">GET JSON</button></a>
+                </div>
             </div>
-
-            <div class="table_element">
-                <p class="table_title">Numeric data:</p>
-                <table>
-                    <tr style="border-bottom: 2px solid blue;">
-                        {% for num_col in num_cols %}
-                        <th style="border-right: 2px solid blue; text-align: center;">
-                            {{ num_col }}
-                        </th>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        {% for num_value in num_values %}
-                            <td style="border-right: 2px solid blue; text-align: center;">
-                                {{ num_value }}
-                            </td>
-                        {% endfor %}
-                    </tr>
-                </table>
+            <div class="result_text">
+                This app uses CatBoost regression model to predict your restaurant's revenue.
+                This is a gradient boosting model. It also demonstrates the results of this model on your data.
+                It displays the original data, normalized data, and the end result of the revenue prediction.
+                You can download this information to your disk in pdf or json format.
+                If you want to know what is CatBoost read
+                <a href="https://catboost.ai/" style="text-decoration: none; font-weight: 700">here</a>.
             </div>
-            <p class="input_data_title">Normalize data</p>
-            <div class="table_element">
-                <p class="table_title">Normalize category data:</p>
-                <table style="width: 300px;">
-                    <tr style="border-bottom: 2px solid blue;">
-                        {% for cat_col in cat_cols %}
-                        <th style="border-right: 2px solid blue; text-align: center;">
-                            {{ cat_col }}
-                        </th>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        {% for norm_cat_value in norm_cat_data %}
-                            <td style="border-right: 2px solid blue; text-align: center;">
-                                {{ norm_cat_value|floatformat:5 }}
-                            </td>
-                        {% endfor %}
-                    </tr>
-                </table>
-            </div>
-            <div class="table_element">
-                <p class="table_title">Normalize numeric data:</p>
-                <table>
-                    <tr style="border-bottom: 2px solid blue;">
-                        {% for num_col in num_cols %}
-                        <th style="border-right: 2px solid blue; text-align: center;">
-                            {{ num_col }}
-                        </th>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        {% for norm_num_value in norm_num_data %}
-                            <td style="border-right: 2px solid blue; text-align: center;">
-                                {{ norm_num_value|floatformat }}
-                            </td>
-                        {% endfor %}
-                    </tr>
-                </table>
-            </div>
-            <p class="prediction_title">Final result:</p>
-            <p style="font-size: 26px;"><b>{{ result_revenue }}</b></p>
         </div>
     {% endif %}
 {% endblock %}
