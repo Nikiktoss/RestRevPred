@@ -64,6 +64,10 @@
                 <p class="category">Joined:</p>
                 <p class="category_value">{{ user.creation_date }}</p>
             </div>
+            <div class="profile_element">
+                <p class="category">Calculations:</p>
+                    <p class="category_value">{{ user.number_of_predictions }}</p>
+            </div>
             <div class="additional_element">
                 <p class="category">Extra information:</p>
                 {% if user.additional_data %}
