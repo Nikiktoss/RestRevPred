@@ -1,21 +1,27 @@
+import logging
+
+import pandas as pd
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.utils.safestring import mark_safe
 from django.views.generic import CreateView, DetailView, UpdateView
-from .revenue_model import RevenuePredictionModel
+from django.http import HttpResponse
+
 
 from .forms import LoginUserForm, UserRegistrationForm, UserEditForm, UploadFileForm
 from django.contrib.auth import get_user_model, login
-
-import logging
-import pandas as pd
+from.revenue_model import cb, normalizer, get_result_data
+from.html_code_generator import HTMlCodeGenerator
+from.pdf_output import PDF, generate_pdf_file
+from.json_output import JSON
 
 
 logger = logging.getLogger(__name__)
-prediction_model = RevenuePredictionModel()
-prediction_model.fit_model()
+html_generator = HTMlCodeGenerator()
 
 
 @login_required
@@ -102,22 +108,41 @@ def calculation_form(request):
         form = UploadFileForm(request.POST, request.FILES)
 
         if form.is_valid():
-            file_content = pd.read_csv(form.cleaned_data['input_file'])
-            numeric_data, category_data = prediction_model.divide_data(file_content)
-            normalize_data = prediction_model.prepare_data(file_content)
-            normalize_cat_data = normalize_data[['City', 'City Group', 'Type']]
-            normalize_num_data = normalize_data.drop(['City', 'City Group', 'Type'], axis=1)
-            result_revenue = prediction_model.predict_revenue(file_content)
+            pdf = PDF()
+            js = JSON()
+
+            data = pd.read_csv(form.cleaned_data['input_file'])
+            num_data, cat_data, normalize_num_data, normalize_cat_data, revenue = get_result_data(cb, normalizer, data)
+            html_output = html_generator.generate_html(num_data, cat_data, normalize_num_data, normalize_cat_data,
+                                                       revenue[0])
+            generate_pdf_file(pdf, num_data, cat_data, normalize_num_data, normalize_cat_data, revenue)
+
+            pdf.output(f'media/pdf_files/revenue_prediction_{request.user.username}.pdf')
+            js.write_to_json_file(f'media/json_files/revenue_prediction_{request.user.username}', num_data, cat_data,
+                                  normalize_num_data, normalize_cat_data, revenue)
+
             return render(request, "calculate_form.html", context={'user': request.user, 'is_form': False,
-                                                                   'cat_cols': category_data.columns,
-                                                                   'num_cols': numeric_data.columns,
-                                                                   'num_values': numeric_data.values[0],
-                                                                   'cat_values': category_data.values[0],
-                                                                   'norm_num_data': normalize_num_data.values[0],
-                                                                   'norm_cat_data': normalize_cat_data.values[0],
-                                                                   'result_revenue': result_revenue[0]})
+                                                                   'content': mark_safe(html_output)})
         else:
             return render(request, "calculate_form.html", context={'user': request.user, 'form': form, 'is_form': True})
     else:
         form = UploadFileForm()
         return render(request, "calculate_form.html", context={'user': request.user, 'form': form, 'is_form': True})
+
+
+def send_pdf_file(request):
+    pdf_path = f'media/pdf_files/revenue_prediction_{request.user.username}.pdf'
+    with open(pdf_path, 'rb') as file:
+        response = HttpResponse(file, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="revenue_prediction_{request.user.username}.pdf"'
+
+    return response
+
+
+def send_json_file(request):
+    json_path = f'media/json_files/revenue_prediction_{request.user.username}.json'
+    with open(json_path, 'rb') as file:
+        response = HttpResponse(file, content_type='application/json')
+        response['Content-Disposition'] = f'attachment; filename="revenue_prediction_{request.user.username}.json"'
+
+    return response
