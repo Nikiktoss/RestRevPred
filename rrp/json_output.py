@@ -1,6 +1,3 @@
-import json
-
-
 class JSON:
     @staticmethod
     def create_object(data):
@@ -18,8 +15,3 @@ class JSON:
                          'normalize_cat_data': norm_cat_dict, 'revenue': revenue_dict}
 
         return result_object
-
-    def write_to_json_file(self, filename, num_data, cat_data, normalize_num_data, normalize_cat_data, result):
-        with open(f'{filename}.json', 'w') as outfile:
-            res_obj = self.create_result_object(num_data, cat_data, normalize_num_data, normalize_cat_data, result)
-            json.dump(res_obj, outfile)
