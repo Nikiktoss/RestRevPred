@@ -39,7 +39,7 @@
                     {% endfor %}
                 {% endif %}
                 <div class="form_buttons">
-                    <button type="reset" class="reset_button">Cansel</button>
+                    <input type="reset" class="reset_button" value="Cansel">
                     <button type="submit" class="submit_button">Predict</button>
                 </div>
             </form>
@@ -50,8 +50,12 @@
             <div class="result_actions">
                 {{ content | safe }}
                 <div class="saving_buttons">
-                    <a href="{% url 'send_pdf_file' %}"><button class="btn btn-danger" style="color: white; font-family: Montserrat">GET PDF</button></a>
-                    <a href="{% url 'send_json_file' %}"><button class="btn btn-warning" style="color: white; font-family: Montserrat">GET JSON</button></a>
+                    {% if id_pdf >= 0 %}
+                        <a href="{% url 'send_pdf_file' id_pdf %}"><button class="btn btn-danger" style="color: white; font-family: Montserrat">GET PDF</button></a>
+                    {% else %}
+                        <a href="#"><button class="btn btn-danger" style="color: white; font-family: Montserrat">GET PDF</button></a>
+                    {% endif %}
+                    <a href="{% url 'send_json_file' id_json %}"><button class="btn btn-warning" style="color: white; font-family: Montserrat">GET JSON</button></a>
                 </div>
             </div>
             <div class="result_text">
