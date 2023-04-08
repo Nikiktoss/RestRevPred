@@ -1,6 +1,7 @@
 import logging
 
 import pandas as pd
+import numpy as np
 import json
 import fpdf
 
@@ -118,6 +119,9 @@ class CalculationForm(FormView):
     @staticmethod
     def get_form_data(form):
         data = pd.read_csv(form.cleaned_data['input_file'])
+
+        if data.shape[0] > 1:
+            data = pd.DataFrame(np.array(data.values[0]).reshape(1, len(data.columns)), columns=data.columns)
 
         if 'City' not in data.columns:
             data['City'] = form.cleaned_data['city_name']

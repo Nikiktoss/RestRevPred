@@ -5,7 +5,7 @@ class PDF(FPDF, HTMLMixin):
     cities = {'İstanbul': 'Istanbul', 'Diyarbakır': 'Diyarbakir', 'İzmir': 'Izmir', 'Elazığ': 'Elazıg',
               'Eskişehir': 'Eskisehir', 'Şanlıurfa': 'Sanliurfa', 'Uşak': 'Usak', 'Muğla': 'Mugla',
               'Kırklareli': 'Kirklareli', 'Karabük': 'Karabuk', 'Tekirdağ': 'Tekirdag', 'Balıkesir': 'Balikesir',
-              'Aydın': 'Aydin', 'Kütahya': 'Kutahya'}
+              'Aydın': 'Aydin', 'Kütahya': 'Kutahya', 'Niğde': 'Nigde'}
 
     def __init__(self, orientation='P', unit='mm', format='A4', rgb_color=(17, 14, 173)):
         super().__init__(orientation, unit, format)
