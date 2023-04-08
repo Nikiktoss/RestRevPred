@@ -26,6 +26,9 @@ cities = [('Adana', 'Adana'), ('Afyonkarahisar', 'Afyonkarahisar'), ('Amasya', '
           ('Şanlıurfa', 'Şanlıurfa')]
 
 
+required_file_cols = pd.read_csv('train.csv').drop(['City', 'City Group', 'Type', 'revenue'], axis=1).columns
+
+
 class LoginUserForm(AuthenticationForm):
     username = forms.CharField(label='Username', required=False, widget=forms.TextInput(attrs={'class': 'input_field'}))
     password = forms.CharField(label='Password', required=False, widget=forms.PasswordInput(attrs={'class': 'input_'
@@ -125,36 +128,53 @@ class UploadFileForm(forms.Form):
         if extension != 'csv':
             raise forms.ValidationError('File type is not allowed')
 
+        data = pd.read_csv(file)
+        file.seek(0)
+        missed_cols = []
+
+        for col in required_file_cols:
+            if col not in data.columns:
+                missed_cols.append(col)
+
+        if len(missed_cols) != 0:
+            raise forms.ValidationError(f'Missed columns {", ".join(missed_cols)} in file')
+
         return file
 
     def clean_city_name(self):
         file = self.cleaned_data.get('input_file', None)
-        data = pd.read_csv(file)
-        file.seek(0)
-
         name = self.cleaned_data.get('city_name')
-        if 'City' not in data.columns and name == "":
-            raise forms.ValidationError('City name field is not filled')
+
+        if file is not None:
+            data = pd.read_csv(file)
+            file.seek(0)
+
+            if 'City' not in data.columns and name == "":
+                raise forms.ValidationError('City name field is not filled')
         return name[2: len(name) - 2]
 
     def clean_city_group(self):
         file = self.cleaned_data.get('input_file', None)
-        data = pd.read_csv(file)
-        file.seek(0)
-
         group = self.cleaned_data.get('city_group')
-        if 'City Group' not in data.columns and group == "":
-            raise forms.ValidationError('City group field is not filled')
+
+        if file is not None:
+            data = pd.read_csv(file)
+            file.seek(0)
+
+            if 'City Group' not in data.columns and group == "":
+                raise forms.ValidationError('City group field is not filled')
 
         return group
 
     def clean_restaurant_type(self):
         file = self.cleaned_data.get('input_file', None)
-        data = pd.read_csv(file)
-        file.seek(0)
-
         rest_type = self.cleaned_data.get('restaurant_type')
-        if 'Type' not in data.columns and rest_type == "":
-            raise forms.ValidationError('Type field is not filled')
+
+        if file is not None:
+            data = pd.read_csv(file)
+            file.seek(0)
+
+            if 'Type' not in data.columns and rest_type == "":
+                raise forms.ValidationError('Type field is not filled')
 
         return rest_type
