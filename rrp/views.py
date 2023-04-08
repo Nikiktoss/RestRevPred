@@ -1,7 +1,10 @@
 import logging
 
 import pandas as pd
+import json
+import fpdf
 
+from django.core.files.base import ContentFile
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView
@@ -27,7 +30,6 @@ html_generator = HTMlCodeGenerator()
 
 @login_required
 def main(request):
-    logger.debug('Ok')
     return render(request, 'main.html', context={'user': request.user})
 
 
@@ -57,11 +59,12 @@ class UserLoginView(LoginView):
 
     def form_valid(self, form):
         messages.success(self.request, "You have been successfully logged in RRP")
-        logging.info('logged in!')
+        logger.info(f'User {self.request.user.username} logged in successfully')
         return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.error(self.request, "Invalid username or password")
+        logger.info("Invalid username or password")
         return self.render_to_response(self.get_context_data(form=form))
 
 
@@ -85,8 +88,10 @@ class UserCreateView(CreateView):
 
             messages.success(self.request, "You have been successfully logged in RRP")
             login(request, user)
+            logger.info(f'User {self.request.user.username} logged in successfully')
             return redirect(self.get_success_url())
 
+        logger.info(f'Invalid values while creating account')
         return render(request, self.template_name, context={'form': form})
 
 
@@ -101,6 +106,7 @@ class UserUpdateView(UpdateView):
     model = get_user_model()
 
     def get_success_url(self):
+        logger.debug(f'User {self.request.user.username} updates personal data')
         return reverse_lazy('profile_page', kwargs={'slug': self.request.user.slug})
 
 
@@ -125,17 +131,22 @@ class CalculationForm(FormView):
         return data
 
     @staticmethod
-    def generate_files(request, *args):
+    def generate_files(*args):
         pdf = PDF()
         js = JSON()
 
-        generate_pdf_file(pdf, args[0], args[1], args[2], args[3], args[4])
-        pdf.output(f'media/pdf_files/revenue_prediction_{request.user.username}.pdf')
-        js.write_to_json_file(f'media/json_files/revenue_prediction_{request.user.username}', args[0], args[1], args[2],
-                              args[3], args[4])
+        pdf_content = None
+        try:
+            generate_pdf_file(pdf, args[0], args[1], args[2], args[3], args[4])
+            pdf_content = pdf.output()
+        except fpdf.FPDFException:
+            logger.error(f'Error while generating pdf')
+        json_content = js.create_result_object(args[0], args[1], args[2], args[3], args[4])
+
+        return pdf_content, json.dumps(json_content)
 
     @staticmethod
-    def update_data(request, revenue):
+    def update_data(request, revenue, pdf_file, json_file):
         User = get_user_model()
         user = User.objects.get(pk=request.user.pk)
         user.number_of_predictions += 1
@@ -143,38 +154,61 @@ class CalculationForm(FormView):
 
         revenue_result = PredictionResult(user=user, revenue=revenue[0])
         revenue_result.save()
+        if pdf_file is not None:
+            revenue_result.pdf_file.save(f'revenue_result_{revenue_result.pk}.pdf', ContentFile(pdf_file))
+        revenue_result.json_file.save(f'revenue_result_{revenue_result.pk}.json', ContentFile(json_file))
+        revenue_result.save()
+
+        return revenue_result
 
     def post(self, request, *args, **kwargs):
         form = UploadFileForm(request.POST, request.FILES)
 
         if form.is_valid():
+            logger.info(f'get data from user {request.user.username}')
+
             data = self.get_form_data(form)
             num_data, cat_data, normalize_num_data, normalize_cat_data, revenue = get_result_data(cb, normalizer, data)
             html_output = html_generator.generate_html(num_data, cat_data, normalize_num_data, normalize_cat_data,
                                                        revenue[0])
+            # try:
+            pdf_content, json_content = self.generate_files(num_data, cat_data, normalize_num_data, normalize_cat_data,
+                                                            revenue)
+            # except fpdf.FPDFException:
+            #     logger.error(f'Error in generating pdf file for user {request.user.username}')
 
-            self.generate_files(request, num_data, cat_data, normalize_num_data, normalize_cat_data, revenue)
-            self.update_data(request, revenue)
+            obj = self.update_data(request, revenue, pdf_content, json_content)
+            id_json, id_pdf = obj.pk, obj.pk
+
+            if not obj.pdf_file:
+                id_pdf = -1
 
             return render(request, "calculate_form.html", context={'user': request.user, 'is_form': False,
-                                                                   'content': mark_safe(html_output)})
+                                                                   'content': mark_safe(html_output),
+                                                                   'id_json': id_json, 'id_pdf': id_pdf})
         else:
+            logger.info(f'Error values in send data from user {request.user.username}')
             return render(request, "calculate_form.html", context={'user': request.user, 'form': form, 'is_form': True})
 
 
-def send_pdf_file(request):
-    pdf_path = f'media/pdf_files/revenue_prediction_{request.user.username}.pdf'
+def send_pdf_file(request, pk):
+    pdf_path = f'media/pdf_files/user_{request.user.pk}/revenue_result_{pk}.pdf'
+
     with open(pdf_path, 'rb') as file:
         response = HttpResponse(file, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="revenue_prediction_{request.user.username}.pdf"'
+        response['Content-Disposition'] = f'attachment; filename="revenue_prediction_{request.user.username}_' \
+                                          f'{request.user.number_of_predictions}.pdf"'
 
+    logger.info(f'User {request.user.username} download result via .pdf file')
     return response
 
 
-def send_json_file(request):
-    json_path = f'media/json_files/revenue_prediction_{request.user.username}.json'
+def send_json_file(request, pk):
+    json_path = f'media/json_files/user_{request.user.pk}/revenue_result_{pk}.json'
     with open(json_path, 'rb') as file:
         response = HttpResponse(file, content_type='application/json')
-        response['Content-Disposition'] = f'attachment; filename="revenue_prediction_{request.user.username}.json"'
+        response['Content-Disposition'] = f'attachment; filename="revenue_prediction_{request.user.username}_' \
+                                          f'{request.user.number_of_predictions}.json"'
 
+    logger.info(f'User {request.user.username} download result via .json file')
     return response
