@@ -11,6 +11,6 @@ urlpatterns = [
     path('profile/<slug:slug>/', UserDetailView.as_view(), name="profile_page"),
     path('profile/<slug:slug>/edit/', UserUpdateView.as_view(), name="edit_profile_page"),
     path('predict/', CalculationForm.as_view(), name="predict_revenue_form"),
-    path('send_pdf/', send_pdf_file, name="send_pdf_file"),
-    path('send_json/', send_json_file, name="send_json_file"),
+    path('send_pdf/<int:pk>/', send_pdf_file, name="send_pdf_file"),
+    path('send_json/<int:pk>/', send_json_file, name="send_json_file"),
 ]
